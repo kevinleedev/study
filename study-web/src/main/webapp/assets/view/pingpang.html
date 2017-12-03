@@ -1,0 +1,111 @@
+<html>
+<head>
+    <title>🏓</title>
+    <style type="text/css">
+        body {
+            margin: auto;
+        }
+        #pp {
+        }
+    </style>
+</head>
+<body>
+    <canvas id="pp" style="margin-left: 20px; border: 1px solid black;" width="1200" height="700"></canvas>
+</body>
+
+<script>
+    c = document.getElementById('pp');
+    cc = c.getContext('2d');
+
+    var ppWidth = 10, ppHeight = 100, zuoQiupaiY = 200, youQiuPaiY = 200, v = 10;
+    var bx = by = 50, xv = yv = 4, bd = 5;
+    var score1 = score2 = 0;
+    var ais = 2;
+
+    window.onload = function () {
+        setInterval(update, 1000/30);
+        c.addEventListener('mousemove', function (e) {
+            zuoQiupaiY = e.clientY - 50;
+        });
+    };
+
+    function reset() {
+        bx = c.width / 2;
+        by = c.height / 2;
+        xv = -xv;
+        yv = 3;
+    }
+
+    function update() {
+        youQiuPaiY += v;
+        //右侧球拍到达底部则向上滚
+        if(youQiuPaiY > c.height - 100) {
+            v = -v;
+            youQiuPaiY += v;
+        }
+        //右侧球拍到达顶部则向下滚
+        if(youQiuPaiY < 0) {
+            v = -v;
+            youQiuPaiY += v;
+        }
+
+        //球移动，设置球的x，y坐标
+        bx += xv;
+        by += yv;
+        if(by < 0 && yv < 0) {
+            yv = -yv;
+        }
+        if(by > c.height && yv > 0) {
+            yv = -yv;
+        }
+        if(bx < 0) {
+            if(by > zuoQiupaiY && by < zuoQiupaiY + ppHeight) {
+                xv = -xv;
+                dy = by - (zuoQiupaiY+ ppHeight/2);
+                yv = dy*0.3;
+            } else { //p1没有接到球
+                score2++;
+                reset(); // 重置游戏
+            }
+        }
+        if(bx > c.width) {
+            if(by > youQiuPaiY && by < youQiuPaiY + ppHeight) {
+                xv = -xv;
+                dy = by - (youQiuPaiY+ ppHeight/2);
+                yv = dy*0.3;
+            } else { //p1没有接到球
+                score1++;
+                reset(); // 重置游戏
+            }
+        }
+
+        if(youQiuPaiY + ppHeight < by) {
+            youQiuPaiY += ais;
+        } else {
+            youQiuPaiY -= ais;
+        }
+
+        //填充球桌颜色为黑色
+        cc.fillStyle = 'black';
+        cc.fillRect(0, 0, c.width, c.height);
+
+        //左侧球拍
+        cc.fillStyle = 'white';
+        cc.fillRect(0, zuoQiupaiY, ppWidth, ppHeight);
+
+        //右侧球拍
+        cc.fillRect(c.width - ppWidth, youQiuPaiY, ppWidth, ppHeight);
+
+        //乒乓球
+        cc.fillRect(bx-bd/2, by-bd/2, bd, bd);
+
+        //分数牌
+        cc.fillText(score1, 100, 100);
+        cc.fillText(score2, c.width-100, 100);
+
+    }
+
+</script>
+
+</html>
+
